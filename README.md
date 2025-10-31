@@ -103,13 +103,3 @@ Do not create: mobile_app/, admin_panel/, infrastructure/.
 Always link to docs/kuwait_smart_med_assistant.md from new README/PRs.
 
 PR title format: chore: repo normalization or feat: mobile screen ...
-
-perl
-Copy code
-
-بعد ما تحفظه على الـmain، ارجع لكوديكس واكتب له جملة وحدة:
-
-> **Repo README updated. Use `/mobile` (not `/mobile_app`). Don’t create extra folders.**
-
-كده نكون قفلناها.
-::contentReference[oaicite:1]{index=1}
