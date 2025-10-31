@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy>=1.4,<3.0
+psycopg2-binary
+alembic
+python-jose[cryptography]
+passlib[bcrypt]
+celery
+redis
+httpx
+cachetools
