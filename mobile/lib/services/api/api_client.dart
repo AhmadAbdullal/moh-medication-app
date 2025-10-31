@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'package:moh_medication_app/core/config.dart';
+
 class ApiClient {
   ApiClient({
     http.Client? httpClient,
-    this.baseUrl = 'https://example.com/api/v1',
-  }) : _httpClient = httpClient ?? http.Client();
+    String? baseUrl,
+  })  : baseUrl = baseUrl ?? AppConfig.apiBaseUrl,
+        _httpClient = httpClient ?? http.Client();
 
   final http.Client _httpClient;
   final String baseUrl;
