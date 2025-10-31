@@ -1,5 +1,3 @@
-
-````markdown
 # MOH Medication App
 
 This repository hosts the Kuwait Ministry of Health smart medication assistant. It will contain:
@@ -46,75 +44,72 @@ Before making changes or running any component, read:
 
 ## Mobile (Flutter)
 
-Run the current app:
-
 ```bash
 cd mobile
 flutter pub get
 flutter run
-````
-
 Notes:
 
-* Default language: **Arabic (RTL)**
+Default language: Arabic (RTL)
 
-* Theme: **white + green (#0F9D58)**
+Theme: white + green (#0F9D58)
 
-* API base URL should be defined in a single place (`lib/core/config.dart`) as:
+API base URL should be defined in a single place (lib/core/config.dart) as:
 
-  ```dart
-  class AppConfig {
-    static const String apiBaseUrl = "http://localhost:8000/api/v1";
-  }
-  ```
+dart
+Copy code
+class AppConfig {
+  static const String apiBaseUrl = "http://localhost:8000/api/v1";
+}
+Any HTTP service in the app should read from this constant, not from hardcoded URLs.
 
-* Any HTTP service in the app should read from this constant, not from hardcoded URLs.
-
----
-
-## Backend (FastAPI) – placeholder
-
+Backend (FastAPI) – placeholder
 When the backend folder is added, expected flow:
 
-```bash
+bash
+Copy code
 cd backend
 pip install -r requirements.txt
 alembic upgrade head
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
+Expose /api/v1/...
 
-* Expose `/api/v1/...`
-* Enable CORS for local Flutter / local admin
-* Add a daily job to sync external drug sources:
+Enable CORS for local Flutter / local admin
 
-  * **now**: RxNorm
-  * **later**: DailyMed + openFDA
+Add a daily job to sync external drug sources:
 
----
+now: RxNorm
 
-## Background Jobs (optional)
+later: DailyMed + openFDA
 
-If Celery/worker files exist in `backend/jobs/`, run:
+Background Jobs (optional)
+If Celery/worker files exist in backend/jobs/, run:
 
-```bash
+bash
+Copy code
 celery -A backend.jobs.daily_sync.celery_app worker --loglevel=info
-```
-
 Then schedule:
 
-```text
+text
+Copy code
 drugs.sync_external_sources → daily
-```
-
 This will refresh RxNorm now, and later DailyMed/openFDA when connectors are ready.
 
----
+Conventions (important for Codex/agents)
+Use only these top-level folders: backend/, mobile/, admin/, docs/.
 
-## Conventions (important for Codex/agents)
+Do not create: mobile_app/, admin_panel/, infrastructure/.
 
-* Use **only** these top-level folders: `backend/`, `mobile/`, `admin/`, `docs/`.
-* Do **not** create: `mobile_app/`, `admin_panel/`, `infrastructure/`.
-* Always link to `docs/kuwait_smart_med_assistant.md` from new README/PRs.
-* PR title format: `chore: repo normalization` or `feat: mobile screen ...`
+Always link to docs/kuwait_smart_med_assistant.md from new README/PRs.
 
-```
+PR title format: chore: repo normalization or feat: mobile screen ...
+
+perl
+Copy code
+
+بعد ما تحفظه على الـmain، ارجع لكوديكس واكتب له جملة وحدة:
+
+> **Repo README updated. Use `/mobile` (not `/mobile_app`). Don’t create extra folders.**
+
+كده نكون قفلناها.
+::contentReference[oaicite:1]{index=1}
