@@ -257,3 +257,7 @@ Each screen must support responsive layouts for 320px width (mobile) through des
 - **RBAC:** Role-Based Access Control.
 - **FHIR:** Fast Healthcare Interoperability Resources.
 - **EAS:** Expo Application Services.
+
+## External Drug Sources (current)
+
+We currently pull medication data from RxNorm (NLM). DailyMed and openFDA sources will be added in future ingestion updates.

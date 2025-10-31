@@ -1,34 +1,28 @@
-# MOH Medication App Backend
+# MOH Medication App
 
-This repository contains a FastAPI-based backend for the Kuwait Ministry of Health smart medication assistant. It exposes authentication, patient schedule, and drug catalog APIs backed by PostgreSQL and SQLAlchemy ORM models. The service also integrates with public RxNorm, DailyMed, and openFDA APIs to enrich the medication catalog and capture provenance for imported data.
+This repository hosts the Kuwait Ministry of Health smart medication assistant. It contains the production backend service, the Flutter mobile application, an admin workspace, and project documentation for deploying and maintaining the platform.
 
-## Features
+## Documentation
 
-- Token-based authentication flows with email/password and phone OTP login endpoints.
-- CRUD-style access to patient medication schedules and dose logging.
-- Admin surfaces for reconciling local Kuwait drug records against RxNorm master data.
-- Celery-powered background jobs that periodically synchronize data from external drug information sources.
-- Alembic migrations and seed scripts to bootstrap the development database.
+Before making changes or running any component, read [`docs/kuwait_smart_med_assistant.md`](docs/kuwait_smart_med_assistant.md) for architecture guidance, environment prerequisites, and integration notes. Also check `docs/rxnorm_sources_for_codex.md` if present.
 
-## Getting Started
+## Project Structure
 
-### Prerequisites
+- `backend/` – FastAPI backend service, including database models, API routers, and background jobs.
+- `mobile/` – Flutter mobile client used by patients and caregivers.
+- `admin/` – Admin dashboard workspace and related tooling.
+- `docs/` – Reference documentation for architecture, operations, and data ingestion plans.
 
-- Python 3.11+
-- PostgreSQL 13+
-- Redis (for Celery background jobs)
+## Backend Quickstart
 
-### Installation
-
-1. Create and activate a virtual environment.
+1. Create and activate a Python 3.11+ virtual environment.
 2. Install dependencies:
 
    ```bash
    pip install -r backend/requirements.txt
    ```
 
-3. Configure environment variables in a `.env` file (see `backend/app/core/config.py` for defaults). At minimum, set `DATABASE_URL` and `SECRET_KEY`.
-
+3. Configure environment variables in a `.env` file (see `backend/app/core/config.py` for defaults).
 4. Apply database migrations:
 
    ```bash
@@ -41,7 +35,7 @@ This repository contains a FastAPI-based backend for the Kuwait Ministry of Heal
    python -m backend.scripts.seed_kuwait_drugs
    ```
 
-### Running the API
+## Running the Backend API
 
 Start the FastAPI server with Uvicorn:
 
@@ -49,9 +43,9 @@ Start the FastAPI server with Uvicorn:
 uvicorn app.main:app --app-dir backend --reload
 ```
 
-The interactive docs are available at <http://localhost:8000/docs>.
+The interactive documentation is available at <http://localhost:8000/docs>.
 
-### Background Jobs
+## Background Jobs
 
 Celery workers are configured in `backend/jobs/daily_sync.py`. Launch a worker with:
 
@@ -59,17 +53,12 @@ Celery workers are configured in `backend/jobs/daily_sync.py`. Launch a worker w
 celery -A backend.jobs.daily_sync.celery_app worker --loglevel=info
 ```
 
-A beat scheduler (or external cron) should enqueue the `drugs.sync_external_sources` task daily to refresh RxNorm, DailyMed, and openFDA data. The ingestion clients live in `backend/app/services/` and encapsulate the public endpoints for these data sources.
+Schedule the `drugs.sync_external_sources` task daily to refresh RxNorm data. DailyMed and openFDA sources will be added once their connectors are finalized.
 
-## Project Structure
+## Mobile (Flutter)
 
-- `backend/app` – FastAPI application code (routers, schemas, models, services).
-- `backend/alembic` – Database migration environment.
-- `backend/jobs` – Celery application and scheduled task definitions.
-- `backend/scripts` – Utility scripts (e.g., seeding local Kuwait drug data).
-
-## Development Tips
-
-- Run `python -m compileall backend` to ensure Python modules compile cleanly.
-- Configure logging and dependency overrides in `backend/app/core/` for local testing.
-- Use the ingestion clients to backfill the master drug catalog before exposing new medications to mobile clients; unverified drugs remain tagged via the `verified_status` field.
+```bash
+cd mobile
+flutter pub get
+flutter run
+```
