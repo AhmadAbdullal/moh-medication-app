@@ -69,15 +69,20 @@ def verify_otp(payload: OTPVerify, db: Session = Depends(deps.get_db)) -> Token:
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    provenance_entries = (
+    query = (
         db.query(Provenance)
         .filter(
             Provenance.entity_id == user.id,
             Provenance.entity_type == "otp",
         )
         .order_by(Provenance.fetched_at.desc())
-        .all()
     )
+
+    bind = db.get_bind()
+    if bind is not None and bind.dialect.name != "sqlite":
+        query = query.with_for_update()
+
+    provenance_entries = query.all()
 
     provenance = None
     for entry in provenance_entries:

@@ -1,4 +1,4 @@
-name: CI
+name: CI – backend, mobile, admin
 
 on:
   push:
@@ -15,16 +15,21 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Backend
+      - name: Backend dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r backend/requirements.txt
-          pytest backend -k "" || true
+
+      - name: Backend tests
+        run: pytest || true
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+
+      - name: Flutter info
+        run: flutter --version
 
       - name: Mobile
         working-directory: mobile
