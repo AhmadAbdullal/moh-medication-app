@@ -48,58 +48,60 @@ Before making changes or running any component, read:
 cd mobile
 flutter pub get
 flutter run
-Notes:
 
-Default language: Arabic (RTL)
+```
 
-Theme: white + green (#0F9D58)
+**Notes:**
 
-API base URL should be defined in a single place (lib/core/config.dart) as:
+- Default language: Arabic (RTL)
+- Theme: white + green (#0F9D58)
+- API base URL should be defined in a single place (`lib/core/config.dart`) as:
 
-dart
-Copy code
+```dart
 class AppConfig {
   static const String apiBaseUrl = "http://localhost:8000/api/v1";
 }
+```
+
 Any HTTP service in the app should read from this constant, not from hardcoded URLs.
 
-Backend (FastAPI) – placeholder
+### Backend (FastAPI) – placeholder
+
 When the backend folder is added, expected flow:
 
-bash
-Copy code
+```bash
 cd backend
 pip install -r requirements.txt
 alembic upgrade head
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-Expose /api/v1/...
+```
 
-Enable CORS for local Flutter / local admin
+Expose `/api/v1/...` and enable CORS for local Flutter / local admin.
 
 Add a daily job to sync external drug sources:
 
-now: RxNorm
+- now: RxNorm
+- later: DailyMed + openFDA
 
-later: DailyMed + openFDA
+### Background Jobs (optional)
 
-Background Jobs (optional)
-If Celery/worker files exist in backend/jobs/, run:
+If Celery/worker files exist in `backend/jobs/`, run:
 
-bash
-Copy code
+```bash
 celery -A backend.jobs.daily_sync.celery_app worker --loglevel=info
+```
+
 Then schedule:
 
-text
-Copy code
+```
 drugs.sync_external_sources → daily
+```
+
 This will refresh RxNorm now, and later DailyMed/openFDA when connectors are ready.
 
-Conventions (important for Codex/agents)
-Use only these top-level folders: backend/, mobile/, admin/, docs/.
+### Conventions (important for Codex/agents)
 
-Do not create: mobile_app/, admin_panel/, infrastructure/.
-
-Always link to docs/kuwait_smart_med_assistant.md from new README/PRs.
-
-PR title format: chore: repo normalization or feat: mobile screen ...
+- Use only these top-level folders: backend/, mobile/, admin/, docs/.
+- Do not create: mobile_app/, admin_panel/, infrastructure/.
+- Always link to `docs/kuwait_smart_med_assistant.md` from new README/PRs.
+- PR title format: `chore: repo normalization` or `feat: mobile screen ...`

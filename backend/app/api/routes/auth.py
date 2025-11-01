@@ -69,15 +69,20 @@ def verify_otp(payload: OTPVerify, db: Session = Depends(deps.get_db)) -> Token:
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    provenance_entries = (
+    query = (
         db.query(Provenance)
         .filter(
             Provenance.entity_id == user.id,
             Provenance.entity_type == "otp",
         )
         .order_by(Provenance.fetched_at.desc())
-        .all()
     )
+
+    bind = db.get_bind()
+    if bind is not None and bind.dialect.name != "sqlite":
+        query = query.with_for_update()
+
+    provenance_entries = query.all()
 
     provenance = None
     for entry in provenance_entries:
@@ -95,6 +100,9 @@ def verify_otp(payload: OTPVerify, db: Session = Depends(deps.get_db)) -> Token:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request")
 
     entry, metadata = provenance
+    if metadata.get("used_at"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="OTP already used")
+
     expires_at_str = metadata.get("expires_at")
     if not expires_at_str or datetime.fromisoformat(expires_at_str) < datetime.utcnow():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="OTP expired")
@@ -104,6 +112,11 @@ def verify_otp(payload: OTPVerify, db: Session = Depends(deps.get_db)) -> Token:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid OTP")
 
     access_token = create_access_token(subject=user.id, is_superuser=user.is_superuser)
+    metadata["used_at"] = datetime.utcnow().isoformat()
+    entry.notes = json.dumps(metadata)
+    db.add(entry)
+    db.commit()
+
     return Token(access_token=access_token)
 
 
