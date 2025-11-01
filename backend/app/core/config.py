@@ -1,5 +1,14 @@
 from functools import lru_cache
-from pydantic import BaseSettings, Field
+
+from pydantic import Field
+
+try:  # pragma: no cover - fallback for environments without pydantic-settings
+    from pydantic_settings import BaseSettings
+except ModuleNotFoundError:  # pragma: no cover
+    from pydantic import BaseModel
+
+    class BaseSettings(BaseModel):
+        model_config = {"extra": "allow"}
 
 
 class Settings(BaseSettings):
